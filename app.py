@@ -2,7 +2,6 @@
 # importing the necessary dependencies
 from flask import Flask, render_template, request,jsonify
 from flask_cors import CORS,cross_origin
-from sklearn.preprocessing import StandardScaler
 import pickle
 
 app = Flask(__name__) # initializing a flask app
@@ -29,11 +28,13 @@ def index():
                 research=1
             else:
                 research=0
-            filename = 'admission_lr_model_ridge.pickle'
+            filename = 'admission_lr_model.pickle'
+            scaler = 'scaler.pickle'
             loaded_model = pickle.load(open(filename, 'rb')) # loading the model file from the storage
+            loaded_scaler = pickle.load(open(scaler, 'rb'))  # loading the scaler file from the storage
             # our data is scaled in our model so we need to scale inputs
-            scaler = StandardScaler()
-            scaled_data = scaler.fit_transform([[gre_score,toefl_score,university_rating,sop,lor,cgpa,research]])
+
+            scaled_data = loaded_scaler.transform([[gre_score,toefl_score,university_rating,sop,lor,cgpa,research]])
             # predictions using the loaded model file
             prediction=loaded_model.predict(scaled_data)
             print('prediction is', prediction)
